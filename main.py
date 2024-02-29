@@ -9,6 +9,7 @@ import sys
 from os import path
 
 
+
 #creating game class now or elseeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
 class Game:
@@ -29,6 +30,8 @@ class Game:
         self.load_data()
     def load_data(self):
         game_folder = path.dirname(__file__)
+        img_folder = path.join(game_folder, "images")
+        self.player_img = pg.image.load(path.join(img_folder, 'sleim.png')).convert_alpha()
         self.map_data = []
         '''
         The with statement is a context manager in Python. 
@@ -40,11 +43,15 @@ class Game:
             for line in f:
                 print(line)
                 self.map_data.append(line)
-                print(self.map_data)
+
         #for making new game
     def new(self):
+        print("new game waiting to be beat...")
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.coins = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
+        self.power_ups = pg.sprite.Group()
        # self.player = Player(self,10,10)
        # self.all_sprites.add(self.player)
         #for x in range(10,20):
@@ -56,17 +63,14 @@ class Game:
                 if tile == '1':
                     print("a wall is here supposedly", row, col)
                     Wall(self, col, row)
-                # if tile == '3':
-                #     print ("ohh scary", row ,col)
-                #     enemy(self,col, row)
-                if tile== 'p':
+                if tile == 'P':
                     self.player = Player(self, col, row)
-            
-                if tile== 'z':
-                    self.player = Player(self, col, row)
-            
-                # if tile == 'z':
-                #     self.player = speedpotion(self, col, row)
+                if tile == 'C':
+                    Coin(self, col, row)
+                if tile == 'M':
+                    Mob(self, col, row)
+                if tile == 'U':
+                    PowerUp(self, col, row)
     def run(self):
         self.playing = True
         while self.playing:
@@ -96,36 +100,24 @@ class Game:
         for y in range(0, height, TILESIZE):
             pg.draw.line(self.screen, LIGHTGRAY,(0, y), (width ,y))
                 
+    def draw_text(self, surface, text, size, color, x, y):
+        font_name = pg.font.match_font('arial')
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.topleft = (x,y)
+        surface.blit(text_surface, text_rect)
+    
     def draw(self):
-        self.screen.fill(BGCOLOR)
-        self.draw_grid()
-        self.all_sprites.draw(self.screen)
-        pg.display.flip()
+            self.screen.fill(BGCOLOR)
+            self.draw_grid()
+            self.all_sprites.draw(self.screen)
+            self.draw_text(self.screen, "Coins " + str(self.player.moneybag), 24, WHITE, width/2 - 32, 2)
+            pg.display.flip()
     def events(self):
-            for event in pg.event.get():
-                # when you hit the red x the window closes the game ends
-                if event.type == pg.QUIT:
-                    self.quit()
-                    print("GAME OVER!!")
-                    print("TOO BAD SUCKER!!!")
-                    print("GET BETTER NOOB")
-                #keybinds
-                # if event.type == pg.KEYDOWN:
-                #     if event.key == pg.K_LEFT:
-                #         self.player.move(dx=-1)
-                # if event.type == pg.KEYDOWN:
-                #     if event.key == pg.K_RIGHT:
-                #         self.player.move(dx=1)
-                # if event.type == pg.KEYDOWN:
-                #     if event.key == pg.K_UP:
-                #         self.player.move(dy=-1)
-                # if event.type == pg.KEYDOWN:
-                #     if event.key == pg.K_DOWN:
-                #         self.player.move(dy=1)
-    def show_start_screen(self):
-        pass
-    def show_go_screen(self):
-        pass
+         for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.quit()
 #assigns the Game to the variableeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 g = Game()
 #g.show_go_screen()
