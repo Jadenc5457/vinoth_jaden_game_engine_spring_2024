@@ -1,6 +1,20 @@
 #  this file was created by your nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
 # importing libraryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+'''PowerUp 2 player self destruct laser projectiles phasing buffs scenery godemode different villains
+
+
+
+
+
+
+
+
+
+'''
+
+
+
 import pygame as pg
 from settings import *
 from Sprites import *
@@ -20,7 +34,7 @@ class Game:
         #setting dimensions for varaiables imported from settingseeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
         self.screen = pg.display.set_mode((width,height))
         #create captionnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
-        pg.display.set_caption(" no ending ")
+        pg.display.set_caption(" WHY U PLAY THIS ")
         #tracks time using ticksnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
         self.clock = pg.time.Clock()
         pg.key.set_repeat(500,100)
