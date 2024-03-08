@@ -2,7 +2,7 @@
 width = 800
 height = 600
 
-TILESIZE = 32
+TILESIZE = 26
 
 FPS = 30
 BLUE = (0,0,225)

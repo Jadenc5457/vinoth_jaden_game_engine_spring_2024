@@ -60,7 +60,7 @@ class Game:
 
         #for making new game
     def new(self):
-        print("new game waiting to be beat...")
+        print("new game waiting to be beat you...")
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.coins = pg.sprite.Group()
@@ -77,9 +77,9 @@ class Game:
                 if tile == '1':
                     print("a wall is here supposedly", row, col)
                     Wall(self, col, row)
-                if tile == 'P':
-                    self.player = Player(self, col, row)
                 if tile == 'C':
+                    self.player = Player(self, col, row)
+                if tile == 'P':
                     Coin(self, col, row)
                 if tile == 'M':
                     Mob(self, col, row)
