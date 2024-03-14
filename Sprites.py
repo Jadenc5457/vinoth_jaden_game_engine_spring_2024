@@ -1,6 +1,7 @@
 #this file was created by chris brad field who copied it from Notch/Jaden Vinoth
 #write a wall class
 
+from turtle import Vec2D
 import pygame as pg
 from settings import *
 from random import choice
@@ -11,32 +12,31 @@ class Player(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(GREEN)
+        self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
-        self.speed = 500
+        self.speed = 200
         self.moneybag = 0
-        
-
+        self.status= ""
+        self.pos = (0,0)
     def get_keys(self):
         self.vx, self.vy = 0, 0
         keys = pg.key.get_pressed()
-        if keys[pg.K_LEFT] or keys[pg.K_a]:
+        if keys[pg.K_LEFT]:
             self.vx = -self.speed
             print(self.rect.x)
             print(self.rect.y)
-        if keys[pg.K_RIGHT] or keys[pg.K_d]:
+        if keys[pg.K_RIGHT]:
             self.vx = self.speed
-        if keys[pg.K_UP] or keys[pg.K_w]:
+        if keys[pg.K_UP]:
             self.vy = -self.speed
-        if keys[pg.K_DOWN] or keys[pg.K_s]:
+        if keys[pg.K_DOWN]:
             self.vy = self.speed
 
-          
 
-def collide_with_walls(self, dir):
+    def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
@@ -56,7 +56,7 @@ def collide_with_walls(self, dir):
                 self.vy = 0
                 self.rect.y = self.y
 #thanks aayush
-def collide_with_group(self, group, kill):
+    def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
             if str(hits[0].__class__.__name__) == "Coin":
@@ -97,7 +97,7 @@ def collide_with_group(self, group, kill):
    
         # self.rect.x = self.x
         # self.rect.y = self.y
-def update(self):
+    def update(self):
         self.get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
@@ -151,6 +151,72 @@ def update(self):
 
 
 
+class Player2(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.vx, self.vy = 0, 0
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.speed = 200
+        self.moneybag = 0
+        self.status= ""
+        self.pos = (0,0)
+    def get_keys(self):
+        self.vx, self.vy = 0, 0
+        keys = pg.key.get_pressed()   
+        if keys[pg.K_a]:
+            self.vx = -self.speed
+        if keys[pg.K_d]:
+            self.vx = self.speed
+        if keys[pg.K_w]:
+            self.vy = -self.speed
+        if keys[pg.K_s]:
+            self.vy = self.speed          
+            print(self.rect.x)
+            print(self.rect.y)
+    def collide_with_walls(self, dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vx > 0:
+                    self.x = hits[0].rect.left - self.rect.width
+                if self.vx < 0:
+                    self.x = hits[0].rect.right
+                self.vx = 0
+                self.rect.x = self.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vy > 0:
+                    self.y = hits[0].rect.top - self.rect.height
+                if self.vy < 0:
+                    self.y = hits[0].rect.bottom
+                self.vy = 0
+                self.rect.y = self.y
+    def collide_with_group(self, group, kill):
+        hits = pg.sprite.spritecollide(self, group, kill)
+        if hits:
+            if str(hits[0].__class__.__name__) == "Coin":
+                self.moneybag += 1
+            if str(hits[0].__class__.__name__) == "PowerUp":
+                self.speed += 200
+    def update(self):
+        self.get_keys()
+        self.x += self.vx * self.game.dt
+        self.y += self.vy * self.game.dt
+        self.rect.x = self.x
+        # add collision
+        self.collide_with_walls('x')
+        self.rect.y = self.y
+        # add collision
+        self.collide_with_walls('y')
+        self.collide_with_group(self.game.coins, True)
+        self.collide_with_group(self.game.power_ups, True)
 
 
 
@@ -160,7 +226,7 @@ class Wall(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(BLUE)
+        self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y

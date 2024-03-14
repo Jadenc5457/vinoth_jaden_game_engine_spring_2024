@@ -1,10 +1,10 @@
 
 width = 800
-height = 600
+height = 800
 
 TILESIZE = 26
 
-FPS = 30
+FPS = 60
 BLUE = (0,0,225)
 BGCOLOR= (0,0,0)
 GREEN = (0,255,0)
