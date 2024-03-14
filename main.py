@@ -85,7 +85,7 @@ class Game:
                     Mob(self, col, row)
                 if tile == 'U':
                     PowerUp(self, col, row)
-                if tile == 'P2':
+                if tile == 'E':
                     self.player2 = Player2(self, col, row)
     def run(self):
         self.playing = True
