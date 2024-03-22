@@ -11,13 +11,14 @@ class Player(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(BLUE)
+        #self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = game.player_img
+        #self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
-        self.speed = 1000
+        self.speed = 300
         self.moneybag = 0
         self.status= ""
         self.pos = (0,0)
@@ -62,7 +63,7 @@ class Player(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "Coin":
                 self.moneybag += 1
             if str(hits[0].__class__.__name__) == "PowerUp":
-                self.speed += 200
+                self.speed += player_speed
 
     # def get_keys(self):
     #     self.vx, self.vy = 0, 0
@@ -150,19 +151,20 @@ class Player(pg.sprite.Sprite):
 
 
 
-
+#player 2 code is basically a copy from player 1
 class Player2(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(RED)
+        # self.image = pg.Surface((TILESIZE, TILESIZE))
+        # self.image.fill(RED)
+        self.image = game.player_img
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
-        self.speed = 200
+        self.speed = 300
         self.moneybag = 0
         self.status= ""
         self.pos = (0,0)
@@ -204,7 +206,7 @@ class Player2(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "Coin":
                 self.moneybag += 1
             if str(hits[0].__class__.__name__) == "PowerUp":
-                self.speed += 200
+                self.speed += player_speed
     def update(self):
         self.get_keys()
         self.x += self.vx * self.game.dt
@@ -259,7 +261,7 @@ class PowerUp(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(WHITE)
+        self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -273,13 +275,12 @@ class Mob(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(RED)
+        self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
-        self.vx, self.vy = 100, 100
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
         self.speed = 1
     # def collide_with_walls(self, dir):
     #     if dir == 'x':
@@ -303,13 +304,13 @@ class Mob(pg.sprite.Sprite):
     #             self.vy = 0
     #             self.rect.y = self.y
     def update(self):
+        # self.rect.x += 1
         self.rect.x += TILESIZE * self.speed
         # self.rect.y += TILESIZE * self.speed
         if self.rect.x > width or self.rect.x < 0:
             self.speed *= -1
         # if self.rect.y > HEIGHT or self.rect.y < 0:
         #     self.speed *= -1
-        
         # # self.rect.x += 1
         # self.x += self.vx * self.game.dt
         # self.y += self.vy * self.game.dt
