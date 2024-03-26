@@ -168,6 +168,7 @@ class Player2(pg.sprite.Sprite):
         self.moneybag = 0
         self.status= ""
         self.pos = (0,0)
+        #hey this is the way the players move
     def get_keys(self):
         self.vx, self.vy = 0, 0
         keys = pg.key.get_pressed()   
@@ -181,6 +182,7 @@ class Player2(pg.sprite.Sprite):
             self.vy = self.speed          
             print(self.rect.x)
             print(self.rect.y)
+            #how we do not go through walls
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
@@ -200,6 +202,7 @@ class Player2(pg.sprite.Sprite):
                     self.y = hits[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
+                #how we are able to touch coins and collect them
     def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
@@ -221,20 +224,34 @@ class Player2(pg.sprite.Sprite):
         self.collide_with_group(self.game.power_ups, True)
 
 
-
+#class or what this wall is
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(LIGHTGRAY)
+        self.image = game.wall_img
+        self.rect = self.image.get_rect()
+        # self.image.fill(LIGHTGRAY)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
-    # def update(self):
+class Wallc(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.walls
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = game.wall_img
+        self.rect = self.image.get_rect()
+        # self.image.fill(LIGHTGRAY)
+        # self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+           # def update(self):
     #     # self.rect.x += 1
     #     self.rect.x += TILESIZE * self.speed
     #     # self.rect.y += TILESIZE * self.speed
@@ -242,6 +259,7 @@ class Wall(pg.sprite.Sprite):
     #         self.speed *= -1
         # if self.rect.y > HEIGHT or self.rect.y < 0:
         #     self.speed *= -1
+        #ooh shiny coin
 class Coin(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.coins
@@ -254,7 +272,7 @@ class Coin(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
-        
+        #speedy thingy
 class PowerUp(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.power_ups
@@ -268,7 +286,7 @@ class PowerUp(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
-
+#Does not work right when placed but still working on it
 class Mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.mobs

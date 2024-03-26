@@ -1,20 +1,3 @@
-#  this file was created by your nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-
-# importing libraryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
-'''PowerUp 2 player self destruct laser projectiles phasing buffs scenery godemode different villains
-
-
-
-
-
-
-
-
-
-'''
-
-
-
 import pygame as pg
 from settings import *
 from Sprites import *
@@ -46,6 +29,7 @@ class Game:
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, "images")
         self.player_img = pg.image.load(path.join(img_folder, 'sleim.png')).convert_alpha()
+        self.wall_img = pg.image.load(path.join(img_folder, 'wall2.png')).convert_alpha()
         self.map_data = []
         '''
         The with statement is a context manager in Python. 
@@ -63,6 +47,7 @@ class Game:
         print("new game waiting to be beat...")
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.wallc = pg.sprite.Group()
         self.coins = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.power_ups = pg.sprite.Group()
@@ -77,6 +62,9 @@ class Game:
                 if tile == '1':
                     print("a wall at", row, col)
                     Wall(self, col, row)
+                if tile == '2':
+                    print("a wall at", row, col)
+                    Wallc(self, col, row)
                 if tile == 'P':
                     self.player = Player(self, col, row)
                 if tile == 'C':
@@ -109,13 +97,14 @@ class Game:
         pass
     def update(self):
         self.all_sprites.update()
-
+#the grid for the game tiles
     def draw_grid(self):
         for x in range(0,width,TILESIZE):
-            pg.draw.line(self.screen,LIGHTGRAY,(x, 0),(x,height))
+            pg.draw.line(self.screen,BGCOLOR,(x, 0),(x,height))
         for y in range(0, height, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGRAY,(0, y), (width ,y))
-                
+            pg.draw.line(self.screen, BGCOLOR,(0, y), (width ,y))
+    
+                #text for some reason
     def draw_text(self, surface, text, size, color, x, y):
         font_name = pg.font.match_font('comic_sans')
         font = pg.font.Font(font_name, size)
