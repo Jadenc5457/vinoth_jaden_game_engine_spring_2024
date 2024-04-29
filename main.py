@@ -4,7 +4,12 @@ from Sprites import *
 from random import randint
 import sys
 from os import path
+"Beta game goal "
+"How to make it better"
 
+#better things to do than to pick coins
+#make better mobs
+#hit mobs withh new characters
 
 
 #creating game class now or elseeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
