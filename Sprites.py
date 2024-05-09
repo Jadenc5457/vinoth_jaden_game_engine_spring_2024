@@ -37,7 +37,25 @@ class Spritesheet:
         image = pg.transform.scale(image, (width * 1, height * 1))
         return image
 
+class Sword(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill((255, 255, 0))  # Yellow color (you can change this)
+        self.rect = self.image.get_rect()
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
 
+    def update(self):
+        # Check for collision with the player
+        hits = pg.sprite.spritecollide(self, self.game.players, False)
+        if hits:
+            # Handle ollision with the player
+            player = hits[0]
+            player.pick_up_sword(self)
+            self.kill()
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y, name, health=100):
         self.groups = game.all_sprites
@@ -439,28 +457,28 @@ class Enemy:
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
-class Item:
-    def __init__(self, name):
-        self.name = name
+# class Item:
+#     def __init__(self, name):
+#         self.name = name
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
-# Initialize Pygame
-pg.init()
-#modified from chat gpt for picking up items
-# Example usage:
-game = Game()
+# # Initialize Pygame
+# pg.init()
+# #modified from chat gpt for picking up items
+# # Example usage:
+# game = Game()
 
-player = Player(game, 0, 0, "Player",) 
-item2 = Item("Shield")
-item1 = Item("Sword")  
+# player = Player(game, 0, 0, "Player",) 
+# item2 = Item("Shield")
+# item1 = Item("Sword")  
 
-player.pick_up_item(item1)  # Pass the 'item1' instance as an argument to the pick_up_item() method
+# player.pick_up_item(item1)  # Pass the 'item1' instance as an argument to the pick_up_item() method
 
-player.pick_up_item(item2)
+# player.pick_up_item(item2)
 
-player.display_inventory()
+# player.display_inventory()
 
 
 # Main loop

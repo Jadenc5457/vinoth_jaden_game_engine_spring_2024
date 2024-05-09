@@ -33,10 +33,11 @@ class Game:
     def load_data(self):
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, "images")
+        # Update image file paths
         self.player_img = pg.image.load(path.join(img_folder, 'sleim.png')).convert_alpha()
         self.wall_img = pg.image.load(path.join(img_folder, 'wall2.png')).convert_alpha()
         self.sword_img = pg.image.load(path.join(img_folder, 'sword.png')).convert_alpha()
-        self.sheild_img = pg.image.load(path.join(img_folder, 'shield.png')).convert_alpha()
+        self.shield_img = pg.image.load(path.join(img_folder, 'shield.png')).convert_alpha()
         self.map_data = []
         '''
         The with statement is a context manager in Python. 
