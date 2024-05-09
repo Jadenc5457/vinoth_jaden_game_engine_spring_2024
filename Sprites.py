@@ -1,5 +1,6 @@
 #this file was created by chris brad field who copied it from Notch/Jaden Vinoth
 #write a wall class
+from typing import Self
 import pygame
 import math
 from turtle import Vec2D
@@ -8,7 +9,8 @@ import pygame as pg
 from settings import *
 from random import choice
 from os import path
-
+import images
+# sword_image = pygame.image.load('sword.png')
 rot = 7
 
 vec =pg.math.Vector2
@@ -17,7 +19,12 @@ SPRITESHEET = "sleim.png"
 game_folder = path.dirname(__file__)
 img_folder = path.join(game_folder, 'images')
 
+
+
+
+
 class Spritesheet:
+    
     # utility class for loading and parsing spritesheets
     def __init__(self, filename):
         self.spritesheet = pg.image.load(filename).convert()
@@ -31,11 +38,36 @@ class Spritesheet:
         return image
 
 
-
 class Player(pg.sprite.Sprite):
-    def __init__(self, name, health=100):
+    def __init__(self, game, x, y, name, health=100):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
         self.name = name
         self.health = health
+        self.inventory = []
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(GREEN)
+        self.rect = self.image.get_rect()
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+        self.vx, self.vy = 0, 0
+        self.speed = 300
+        self.moneybag = 0
+        self.status = ""
+        self.pos = (0, 0)
+
+    def pick_up_item(self, item):
+        self.inventory.append(item)
+        print(f"{self.name} picked up {item}.")
+
+    def display_inventory(self):
+        print(f"{self.name}'s inventory:")
+        if self.inventory:
+            for item in self.inventory:
+                print(item)
+        else:
+            print("Inventory is empty.")
 
     def take_damage(self, damage):
         self.health -= damage
@@ -43,30 +75,12 @@ class Player(pg.sprite.Sprite):
             print(f"{self.name} has been defeated!")
         else:
             print(f"{self.name} takes {damage} damage. Health: {self.health}")
-    def __init__(self, game, x, y):
-        self.groups = game.all_sprites
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image = game.player_img
-        # self.spritesheet = Spritesheet(path.join(img_folder, 'autobot_two_frames.png'))
-        # self.load_images()
-        #self.image.fill(BLUE)
-        self.rect = self.image.get_rect()
-        self.vx, self.vy = 0, 0
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
-        self.speed = 300
-        self.moneybag = 0
-        self.status= ""
-        self.pos = (0,0)
+
     def get_keys(self):
         self.vx, self.vy = 0, 0
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT]:
             self.vx = -self.speed
-            print(self.rect.x)
-            print(self.rect.y)
         if keys[pg.K_RIGHT]:
             self.vx = self.speed
         if keys[pg.K_UP]:
@@ -74,138 +88,52 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_DOWN]:
             self.vy = self.speed
 
-
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
                 if self.vx > 0:
-                    self.x = hits[0].rect.left - self.rect.width
+                    self.rect.right = hits[0].rect.left
                 if self.vx < 0:
-                    self.x = hits[0].rect.right
+                    self.rect.left = hits[0].rect.right
                 self.vx = 0
-                self.rect.x = self.x
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
                 if self.vy > 0:
-                    self.y = hits[0].rect.top - self.rect.height
+                    self.rect.bottom = hits[0].rect.top
                 if self.vy < 0:
-                    self.y = hits[0].rect.bottom
+                    self.rect.top = hits[0].rect.bottom
                 self.vy = 0
-                self.rect.y = self.y
-#thanks aayush
+
     def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
-            if str(hits[0].__class__.__name__) == "Coin":
-                self.moneybag += 1
-            if str(hits[0].__class__.__name__) == "PowerUp":
-                self.speed += player_speed
+            for hit in hits:
+                if isinstance(hit, Coin):
+                    self.moneybag += 1
+                elif isinstance(hit, PowerUp):
+                    self.speed += player_speed
 
-    # def get_keys(self):
-    #     self.vx, self.vy = 0, 0
-    #     keys = pg.key.get_pressed()
-    #     if keys[pg.K_LEFT] or keys[pg.K_a]:
-    #         self.vx = -player_speed
-    #         print(self.rect.x)
-    #         print(self.rect.y)
-    #     if keys[pg.K_RIGHT] or keys[pg.K_d]:
-    #         self.vx = player_speed
-    #     if keys[pg.K_UP] or keys[pg.K_w]:
-    #         self.vy = player_speed
-    #     if keys[pg.K_DOWN] or keys[pg.K_s]:
-    #     if self.vx != 0 and self.vy != 0:
-    #         self.vx *= 0.7071
-    #         self.vy *= 0.7071
-
-    
-
-    
-
-
-    # def speedpotion(self, ):
-    #     hits = pg.sprite.spritecollide(self,self.game.speedpotion, False)
-    #     if hits:
-    #         #increase speed
-    #         self.speed 
-
-        # self.x+=dx
-        # self.x+=dy
-
-   
-        # self.rect.x = self.x
-        # self.rect.y = self.y
-    def update(self):
-        self.get_keys()
-        self.x += self.vx * self.game.dt
-        self.y += self.vy * self.game.dt
-        self.rect.x = self.x
-        # add collision
+    def update(self, group, kill):
+        self.player.update(self.coins, True)
+        hits = pg.sprite.spritecollide(self, group, kill)
+        if hits:
+            self.get_keys()
+        self.rect.x += self.vx * self.game.dt
         self.collide_with_walls('x')
-        self.rect.y = self.y
-        # add collision
+        self.rect.y += self.vy * self.game.dt
         self.collide_with_walls('y')
         self.collide_with_group(self.game.coins, True)
         self.collide_with_group(self.game.power_ups, True)
-        # self.rect.x = self.x * TILESIZE
-        # self.rect.y = self.y * TILESIZE
-    # def __init__(self, x, y):
-    #     self.x = x
-    #     self.y = y
-    #     self.projectiles = []
-
-    # def shoot(self, direction):
-    #     if direction == "up":
-    #         self.projectiles.append(Projectile(self.x, self.y - 1))
-    #     elif direction == "down":
-    #         self.projectiles.append(Projectile(self.x, self.y + 1))
-    #     elif direction == "left":
-    #         self.projectiles.append(Projectile(self.x - 1, self.y))
-    #     elif direction == "right":
-    #         self.projectiles.append(Projectile(self.x + 1, self.y))
-
-    # def update_projectiles(self):
-    #     for projectile in self.projectiles:
-    #         projectile.update_position()
-
-# coin_hits = pg.sprite.spritecollide(self.game.coins, True)
-        # if coin_hits:
-        #     print("I got a coin")
-
-   
-    #     self.vx, self.vy = 0, 0
-    #     self.x = x * TILESIZE
-    #     self.y = y * TILESIZE
-    #     self.moneybag = 0
-
-    # def get_keys(self):
-    #     self.vx, self.vy = 0, 0
-    # def collide_with_walls(self, dir):
-    #             self.y = hits[0].rect.bottom
-    #             self.vy = 0
-    #             self.rect.y = self.y
-
-
-    # def collide_with_group(self, group, kill):
-    #     hits = pg.sprite.spritecollide(self, group, kill)
-    #     if hits:
-    #         if str(hits[0].__class__.__name__) == "Coin":
-    #             self.moneybag += 1
-
-    # def update(self):
-    #     self.get_keys()
-    # def update(self):
-    #     self.rect.y = self.y
-    #     # add collision later
-    #     self.collide_with_walls('y')
-    #     self.collide_with_group(self.game.coins, True)
-
-        # coin_hits = pg.sprite.spritecollide(self.game.coins, True)
-        # if coin_hits:
-        #     print("I got a coin")
-
-
+        if str(hits[0].__class__.__name__) == "sword":
+                print("you got a sword....yay")
+                hits[0].attached = True
+class Game:
+    
+    def __init__(self):
+        self.all_sprites = pg.sprite.Group()
+        self.player = Player(self, 0, 0, "Player")
 
 #player 2 code is basically a copy from player 1
 class Player2(pg.sprite.Sprite):
@@ -448,24 +376,24 @@ class Mob(pg.sprite.Sprite):
 #         self.speed = 0
 
 
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.alive = True
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#         self.alive = True
 
-    def kill(self):
-        self.alive = False
-        print("Mob killed!")
+#     def kill(self):
+#         self.alive = False
+#         print("Mob killed!")
 
-# Example usage:
-if __name__ == "__main__":
-    player = Player(0, 0)
-    player.shoot("right")
+# # Example usage:
+# if __name__ == "__main__":
+#     player = Player(0, 0)
+#     player.shoot("right")
 
-    mob = Mob(1, 0)
+#     mob = Mob(1, 0)
 
-    for projectile in player.projectiles:
-        projectile.check_collision(mob)
+#     for projectile in player.projectiles:
+#         projectile.check_collision(mob)
 # class enemy(pg.sprite.Sprite):
 #     def __init__(self, game, x, y):
 #         self.groups = game.all_sprites, game.walls
@@ -511,7 +439,28 @@ class Enemy:
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
+class Item:
+    def __init__(self, name):
+        self.name = name
 
+    def __str__(self):
+        return self.name
+
+# Initialize Pygame
+pg.init()
+#modified from chat gpt for picking up items
+# Example usage:
+game = Game()
+
+player = Player(game, 0, 0, "Player",) 
+item2 = Item("Shield")
+item1 = Item("Sword")  
+
+player.pick_up_item(item1)  # Pass the 'item1' instance as an argument to the pick_up_item() method
+
+player.pick_up_item(item2)
+
+player.display_inventory()
 
 
 # Main loop

@@ -22,7 +22,7 @@ class Game:
         #setting dimensions for varaiables imported from settingseeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
         self.screen = pg.display.set_mode((width,height))
         #create captionnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
-        pg.display.set_caption(" WHY U PLAY THIS ")
+        pg.display.set_caption("sleim game thingy")
         #tracks time using ticksnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
         self.clock = pg.time.Clock()
         pg.key.set_repeat(500,100)
@@ -35,6 +35,8 @@ class Game:
         img_folder = path.join(game_folder, "images")
         self.player_img = pg.image.load(path.join(img_folder, 'sleim.png')).convert_alpha()
         self.wall_img = pg.image.load(path.join(img_folder, 'wall2.png')).convert_alpha()
+        self.sword_img = pg.image.load(path.join(img_folder, 'sword.png')).convert_alpha()
+        self.sheild_img = pg.image.load(path.join(img_folder, 'shield.png')).convert_alpha()
         self.map_data = []
         '''
         The with statement is a context manager in Python. 
@@ -71,7 +73,7 @@ class Game:
                     print("a wall at", row, col)
                     Wallc(self, col, row)
                 if tile == 'P':
-                    self.player = Player(self, col, row)
+                    self.player = Player(self, col, row, "gerald")
                 if tile == 'C':
                     Coin(self, col, row)
                 if tile == 'M':
@@ -83,12 +85,9 @@ class Game:
     def run(self):
         self.playing = True
         while self.playing:
-            self.dt = self.clock.tick(FPS)/1000
-            self.events()
-            #input
-            self.update()
-            #process
-            self.draw()
+            self.dt = self.clock.tick(FPS) / 100
+        self.events()
+        self.draw()
             #output
 
         #will not run only on thissssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
