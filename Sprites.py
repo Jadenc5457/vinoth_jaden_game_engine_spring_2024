@@ -23,39 +23,39 @@ img_folder = path.join(game_folder, 'images')
 
 
 
-class Spritesheet:
+# class Spritesheet:
     
-    # utility class for loading and parsing spritesheets
-    def __init__(self, filename):
-        self.spritesheet = pg.image.load(filename).convert()
+#     # utility class for loading and parsing spritesheets
+#     def __init__(self, filename):
+#         self.spritesheet = pg.image.load(filename).convert()
 
-    def get_image(self, x, y, width, height):
-        # grab an image out of a larger spritesheet
-        image = pg.Surface((width, height))
-        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
-        # image = pg.transform.scale(image, (width, height))
-        image = pg.transform.scale(image, (width * 1, height * 1))
-        return image
+#     def get_image(self, x, y, width, height):
+#         # grab an image out of a larger spritesheet
+#         image = pg.Surface((width, height))
+#         image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+#         # image = pg.transform.scale(image, (width, height))
+#         image = pg.transform.scale(image, (width * 1, height * 1))
+#         return image
 
-class Sword(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.groups = game.all_sprites
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill((255, 255, 0))  # Yellow color (you can change this)
-        self.rect = self.image.get_rect()
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE
+# class Sword(pg.sprite.Sprite):
+#     def __init__(self, game, x, y):
+#         self.groups = game.all_sprites
+#         pg.sprite.Sprite.__init__(self, self.groups)
+#         self.game = game
+#         self.image = pg.Surface((TILESIZE, TILESIZE))
+#         self.image.fill((255, 255, 0))  # Yellow color (you can change this)
+#         self.rect = self.image.get_rect()
+#         self.rect.x = x * TILESIZE
+#         self.rect.y = y * TILESIZE
 
-    def update(self):
-        # Check for collision with the player
-        hits = pg.sprite.spritecollide(self, self.game.players, False)
-        if hits:
-            # Handle ollision with the player
-            player = hits[0]
-            player.pick_up_sword(self)
-            self.kill()
+    # def update(self):
+    #     # Check for collision with the player
+    #     hits = pg.sprite.spritecollide(self, self.game.players, False)
+    #     if hits:
+    #         # Handle ollision with the player
+    #         player = hits[0]
+    #         player.pick_up_sword(self)
+    #         self.kill()
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y, name, health=100):
         self.groups = game.all_sprites
@@ -144,8 +144,9 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('y')
         self.collide_with_group(self.game.coins, True)
         self.collide_with_group(self.game.power_ups, True)
-        if str(hits[0].__class__.__name__) == "sword":
-                print("you got a sword....yay")
+        self.collide_with_group(self.game.Sword, False)
+        if str(hits[0].__class__.__name__) == "Sword":
+                print("you found a sword")
                 hits[0].attached = True
 class Game:
     
@@ -457,6 +458,32 @@ class Enemy:
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
+# class shield(pg.sprite.Sprite):
+
+
+class sword(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.sword
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(BGCOLOR)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+        self.attached = False
+    def attach(self, player):
+        self.rect.x = player.rect.x + 16
+        self.rect.y = player.rect.y + 16
+        self.x = player.rect.x + 16
+        self.y = player.rect.y + 16
+    def update(self):
+        if self.attached:
+            self.attach(self.game.player)
+        self.rect.x = self.x
+        self.rect.y = self.y
 # class Item:
 #     def __init__(self, name):
 #         self.name = name

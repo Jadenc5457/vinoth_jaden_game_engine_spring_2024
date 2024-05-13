@@ -9,7 +9,7 @@ from os import path
 
 #better things to do than to pick coins
 #make better mobs
-#hit mobs withh new characters
+#hit mobs with new characters
 
 
 #creating game class now or elseeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
@@ -88,6 +88,7 @@ class Game:
         while self.playing:
             self.dt = self.clock.tick(FPS) / 100
         self.events()
+        self.update()
         self.draw()
             #output
 
