@@ -3,13 +3,10 @@
 from typing import Self
 import pygame
 import math
-from turtle import Vec2D
 from utils import*
 import pygame as pg
 from settings import *
-from random import choice
 from os import path
-import images
 # sword_image = pygame.image.load('sword.png')
 rot = 7
 
@@ -18,9 +15,6 @@ SPRITESHEET = "sleim.png"
 
 game_folder = path.dirname(__file__)
 img_folder = path.join(game_folder, 'images')
-
-
-
 
 
 # class Spritesheet:
@@ -56,6 +50,30 @@ img_folder = path.join(game_folder, 'images')
     #         player = hits[0]
     #         player.pick_up_sword(self)
     #         self.kill()
+
+
+class sword(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = game.sword_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+        self.attached = False
+        
+    def attach(self, player):
+        self.attached = True
+        self.player = player
+        print("Sword attached")
+    def update(self):
+        if self.attached and self.player:
+            self.rect.center = self.player.rect.center
+
+
+
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y, name, health=100):
         self.groups = game.all_sprites
@@ -65,15 +83,22 @@ class Player(pg.sprite.Sprite):
         self.health = health
         self.inventory = []
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(GREEN)
+        self.image = game.player_img
         self.rect = self.image.get_rect()
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
         self.vx, self.vy = 0, 0
-        self.speed = 300
+        self.speed = 10
         self.moneybag = 0
         self.status = ""
         self.pos = (0, 0)
+        self.sword = None
+        self.sword_drawn = False
+        self.sword_dir = (0,0)
+        self.pos = vec(0,0)
+        self.dir = vec(0,0)
+        self.rot = 0
+        self.angle = 0
 
     def pick_up_item(self, item):
         self.inventory.append(item)
@@ -105,6 +130,11 @@ class Player(pg.sprite.Sprite):
             self.vy = -self.speed
         if keys[pg.K_DOWN]:
             self.vy = self.speed
+    
+    def pick_up_sword(self, sword):
+        self.sword = sword
+        sword.kill()  # Remove the sword from the game
+        print(f"{self.name} picked up a sword!")
 
     def collide_with_walls(self, dir):
         if dir == 'x':
@@ -131,28 +161,47 @@ class Player(pg.sprite.Sprite):
                 if isinstance(hit, Coin):
                     self.moneybag += 1
                 elif isinstance(hit, PowerUp):
-                    self.speed += player_speed
+                    self.speed += player_speed 
+                elif isinstance(hit, sword):
+                    hit.attach(self)  # Attach the sword to the player
+                elif isinstance(hit, Mob) and self.sword:  # Check if the player has a sword
+                    hit.take_damage(50)  # Deal damage to the mob if player has a sword
 
-    def update(self, group, kill):
-        self.player.update(self.coins, True)
-        hits = pg.sprite.spritecollide(self, group, kill)
-        if hits:
-            self.get_keys()
+                # You can remove this condition if you only want the sword to kill mobs
+                elif isinstance(hit, sword):
+                    hit.kill()
+                # if str(hits[0].__class__.__name__) == "sword":
+                #  hits[0].attached = True
+    def pick_up_sword(self, sword):
+        self.sword = sword
+        sword.kill()
+        print(f"{self.name} picked up a sword!")
+        #modified chatgpt^^^^^^^^^
+
+    
+    def update(self):
+        self.get_keys()
         self.rect.x += self.vx * self.game.dt
         self.collide_with_walls('x')
         self.rect.y += self.vy * self.game.dt
         self.collide_with_walls('y')
         self.collide_with_group(self.game.coins, True)
         self.collide_with_group(self.game.power_ups, True)
-        self.collide_with_group(self.game.Sword, False)
-        if str(hits[0].__class__.__name__) == "Sword":
-                print("you found a sword")
-                hits[0].attached = True
-class Game:
-    
-    def __init__(self):
-        self.all_sprites = pg.sprite.Group()
-        self.player = Player(self, 0, 0, "Player")
+        self.collide_with_group(self.game.Swords, True)
+        self.collide_with_group(self.game.mobs, False)
+        self.collide_with_group(self.game.collectibles, True)
+
+        if self.sword:
+            self.attack()
+            self.sword.update_position(self)
+
+    def attack(self):
+        # Check if there are mobs in range to attack
+        hits = pg.sprite.spritecollide(self, self.game.mobs, False)
+        if hits:
+            for mob in hits:
+                mob.take_damage(50)  # Deal damage to the mob
+
 
 #player 2 code is basically a copy from player 1
 class Player2(pg.sprite.Sprite):
@@ -167,7 +216,7 @@ class Player2(pg.sprite.Sprite):
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
-        self.speed = 300
+        self.speed = 100
         self.moneybag = 0
         self.status= ""
         self.pos = (0,0)
@@ -316,9 +365,15 @@ class Mob(pg.sprite.Sprite):
         self.vx, self.vy = 100, 100
         self.x = x * TILESIZE
         self.y = y * TILESIZE
-        self.speed = 300
+        self.speed = 1
         self.health = 32
         self.max_health = 32
+
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.kill()
+            print("Mob has been killed!")
 
         print("created mob at", self.rect.x, self.rect.y)
     def collide_with_walls(self, dir):
@@ -460,30 +515,28 @@ class Enemy:
 
 # class shield(pg.sprite.Sprite):
 
+#class mofied by chat gpt 
 
-class sword(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.sword
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(BGCOLOR)
-        self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE
-        self.attached = False
-    def attach(self, player):
-        self.rect.x = player.rect.x + 16
-        self.rect.y = player.rect.y + 16
-        self.x = player.rect.x + 16
-        self.y = player.rect.y + 16
-    def update(self):
-        if self.attached:
-            self.attach(self.game.player)
-        self.rect.x = self.x
-        self.rect.y = self.y
+        
+        # if hits:
+        #     # Handle collision with the player
+        #     player = hits[0]
+        #     player.pick_up_sword(self)  # Call the pick_up_sword method of the player to attach the sword
+        #     self.attached = True  # Set attached to True
+        # else:
+        #     self.attached = False  # Reset attached to False if not colliding with the player
+        
+        # # Update sword's position based on attachment status
+        # if self.attached:
+        #     self.attach(self.game.player)
+        # # else:
+        # #     self.rect.x = self.x
+        #     self.rect.y = self.y
+        # if self.attached:
+        #     self.attach(self.game.player)
+        # self.rect.x = self.x        # self.rect.y = self.y
+        
+
 # class Item:
 #     def __init__(self, name):
 #         self.name = name
@@ -509,4 +562,28 @@ class sword(pg.sprite.Sprite):
 
 
 # Main loop
+class Collectible(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.collectibles
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(PINK)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+        self.attached = False
+        self.category = "collectible"
+    def attach(self, player):
+        self.rect.x = player.rect.x + 16
+        self.rect.y = player.rect.y + 16
+        self.x = player.rect.x + 16
+        self.y = player.rect.y + 16
+    def update(self):
+        if self.attached:
+            self.attach(self.game.player)
+        self.rect.x = self.x
+        self.rect.y = self.y
 running = True

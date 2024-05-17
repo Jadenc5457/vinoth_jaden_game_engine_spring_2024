@@ -27,9 +27,12 @@ class Game:
         self.clock = pg.time.Clock()
         pg.key.set_repeat(500,100)
         self.running= True
+        self.all_sprites = pg.sprite.Group()
+        self.player_group = pg.sprite.Group()
+        
         #later store info
         # run method- responsible for running gameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-        self.load_data()
+
     def load_data(self):
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, "images")
@@ -52,6 +55,7 @@ class Game:
                 print(self.map_data)
         #for making new game
     def new(self):
+        self.load_data()
         print("new game waiting to be beat...")
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
@@ -59,12 +63,13 @@ class Game:
         self.coins = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.power_ups = pg.sprite.Group()
+        self.Swords = pg.sprite.Group()
+        self.collectibles = pg.sprite.Group()
        # self.player = Player(self,10,10)
        # self.all_sprites.add(self.player)
         #for x in range(10,20):
          #Wall(self,x,5)
         for row, tiles in enumerate(self.map_data):
-            print(row)
             for col, tile in enumerate(tiles):
                 print(col)
                 if tile == '1':
@@ -83,13 +88,17 @@ class Game:
                     PowerUp(self, col, row)
                 if tile == 'E':
                     self.player2 = Player2(self, col, row)
+                if tile == 'S':
+                    sword(self,col,row,)
+                if tile == 'c':
+                    Collectible(self, col, row)
     def run(self):
         self.playing = True
         while self.playing:
             self.dt = self.clock.tick(FPS) / 100
-        self.events()
-        self.update()
-        self.draw()
+            self.events()
+            self.update()
+            self.draw()
             #output
 
         #will not run only on thissssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
@@ -135,7 +144,7 @@ class Game:
         pass
     def show_go_screen(self):
         pass
-    
+   
     
 #assigns the Game to the variableeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 g = Game()
